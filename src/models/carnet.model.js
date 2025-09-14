@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-const { Schema, model } = mongoose;
+const { Schema, model, Types } = mongoose;
 
 const carnetSchema = new Schema(
   {
@@ -12,10 +12,11 @@ const carnetSchema = new Schema(
       type: String, 
       required: true 
     },
-  }, 
-  { 
-    timestamps: true 
-  }
-);
+  alumno: {
+    type: Types.ObjectId,
+    ref: "Alumno", // referencia al modelo Alumno
+    unique: true   // 🔑 garantiza que un alumno solo tenga 1 carnet
+  },
+});
 
-export default model("Carnet", carnetSchema);
+export const carnetModel = model("Carnet", carnetSchema);
