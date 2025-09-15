@@ -31,13 +31,15 @@ const alumnoSchema = new Schema(
       type: Number,
       required: true
     },
-    contacto: contactoSchema,
+    contacto: [contactoSchema],
     carnet: {
       type: Types.ObjectId,
       ref: "Carnet",
-      unique: true,
-      sparse: true,
-  }
+  },
+  cursos: {
+      type: [Types.ObjectId],
+      ref: "Curso"
+    }
   }
 );
 
