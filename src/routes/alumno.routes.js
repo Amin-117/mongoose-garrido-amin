@@ -1,12 +1,20 @@
 import express from "express";
-import { createAlumno, getAllAlumno } from "../controllers/alumno.controller.js";
+import {
+  createAlumno,
+  getAlumnos,
+  getAlumnoById,
+  updateAlumno,
+  deleteAlumno,
+} from "../controllers/alumno.controller.js";
 
 export const alumnoRouter = express.Router();
 
-// 📌 Crear un alumno
-// POST /alumnos
-alumnoRouter.post("/", createAlumno);
+alumnoRouter.post("/alumnos", createAlumno);
 
-// 📌 Obtener todos los alumnos
-// GET /alumnos
-alumnoRouter.get("/", getAllAlumno);
+alumnoRouter.get("/alumnos", getAlumnos);
+
+alumnoRouter.get("/alumnos/:id", getAlumnoById);
+
+alumnoRouter.put("/alumnos/:id", updateAlumno);
+
+alumnoRouter.delete("/alumnos/:id", deleteAlumno);

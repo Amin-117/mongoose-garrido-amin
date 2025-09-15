@@ -1,60 +1,123 @@
 import { carnetModel } from "../models/carnet.model.js";
-import { alumnoModel } from "../models/alumno.model.js";
 
-export const agregarCarnet = async (req, res) => {
-  const { idAlumno } = req.params;
-  const { numero, carrera } = req.body;
-
+export const createCarnet = async (req, res) => {
   try {
-    // 1. Buscar alumno
-    const alumno = await alumnoModel.findById(idAlumno);
-    if (!alumno) {
-      return res.status(404).json({ message: "Alumno no encontrado" });
-    }
-
-    // 2. Crear carnet y asociar al alumno
-    const nuevoCarnet = new carnetModel({
-      numero,
-      carrera,
-      alumno: idAlumno
-    });
-    await nuevoCarnet.save();
-
-    // 3. Asociar carnet al alumno
-    alumno.carnet = nuevoCarnet._id;
-    await alumno.save();
-
-    // 4. Retornar alumno con carnet (populate correcto)
-    const alumnoConCarnet = await alumnoModel
-      .findById(idAlumno)
-      .populate("carnet");
-
-    res.status(201).json(alumnoConCarnet);
-
+    const newCarnet = new carnetModel(req.body);
+    await newCarnet.save();
+    res.status(201).json(newCarnet);
   } catch (error) {
-    console.log(error); // 🔹 Muy importante para depurar
-    res.status(500).json({ message: "Error al agregar carnet", error });
-  }
-};
-
-
-
-export const getAllcarnet = async (req, res) => {
-  try {
-    const carnet = await carnetModel.find();
-
-    res.status(200).json({
-      ok: true,
-      data: carnet,
-    });
-  } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.status(500).json({
       ok: false,
       msg: "Error interno del servidor",
     });
   }
 };
+
+export const getCarnets = async (req, res) => {
+  try {
+    const carnets = await carnetModel.find();
+    res.status(200).json(carnets);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      ok: false,
+      msg: "Error interno del servidor",
+    });
+  }
+};
+
+export const getCarnetById = async (req, res) => {
+  try {
+    const carnet = await carnetModel.findById(req.params.id);
+    return res.status(200).json(carnet);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      ok: false,
+      msg: "Error interno del servidor",
+    });
+  }
+};
+
+export const updateCarnet = async (req, res) => {
+  try {
+    const updateCarnet = await carnetModel.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+    return res.status(200).json(updateCarnet);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      ok: false,
+      msg: "Error interno del servidor",
+    });
+  }
+};
+
+export const deleteCarnet = async (req, res) => {
+  try {
+    const deleteCarnet = await carnetModel.findByIdAndDelete(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+    return res.status(200).json({ msg: "carnet eliminado" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      ok: false,
+      msg: "Error interno del servidor",
+    });
+  }
+};
+
+// export const agregarCarnet = async (req, res) => {
+//   const { idAlumno } = req.params;
+//   const { numero, carrera } = req.body;
+//   try {
+//     const alumno = await alumnoModel.findById(idAlumno);
+//     if (!alumno) {
+//       return res.status(404).json({ message: "Alumno no encontrado" });
+//     }
+//     const nuevoCarnet = new carnetModel({
+//       numero,
+//       carrera,
+//       alumno: idAlumno
+//     });
+//     await nuevoCarnet.save();
+//     alumno.carnet = nuevoCarnet._id;
+//     await alumno.save();
+//     const alumnoConCarnet = await alumnoModel
+//       .findById(idAlumno)
+//       .populate("carnet");
+
+//     res.status(201).json(alumnoConCarnet);
+
+//   } catch (error) {
+//     console.log(error); // 🔹 Muy importante para depurar
+//     res.status(500).json({ message: "Error al agregar carnet", error });
+//   }
+// };
+
+// export const getAllcarnet = async (req, res) => {
+//   try {
+//     const carnet = await carnetModel.find();
+
+//     res.status(200).json({
+//       ok: true,
+//       data: carnet,
+//     });
+//   } catch (error) {
+//     console.log(error);
+//     return res.status(500).json({
+//       ok: false,
+//       msg: "Error interno del servidor",
+//     });
+//   }
+// };
 
 // export const getUserById = async (req, res) => {
 //   const { id } = req.params;

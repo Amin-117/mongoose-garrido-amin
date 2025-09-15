@@ -1,12 +1,20 @@
 import express from "express";
-import { agregarCarnet, getAllcarnet } from "../controllers/carnet.controller.js";
+import {
+  createCarnet,
+  getCarnets,
+  getCarnetById,
+  updateCarnet,
+  deleteCarnet,
+} from "../controllers/carnet.controller.js";
 
 export const carnetRouter = express.Router();
 
-// 📌 Crear un alumno
-// POST /alumnos
-carnetRouter.post("/:idAlumno", agregarCarnet);
+carnetRouter.post("/carnets", createCarnet);
 
-// 📌 Obtener todos los alumnos
-// GET /alumnos
-carnetRouter.get("/", getAllcarnet);
+carnetRouter.get("/carnets", getCarnets);
+
+carnetRouter.get("/carnets/:id", getCarnetById);
+
+carnetRouter.put("/carnets/:id", updateCarnet);
+
+carnetRouter.delete("/carnets/:id", deleteCarnet);

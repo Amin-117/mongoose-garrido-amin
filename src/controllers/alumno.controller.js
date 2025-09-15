@@ -1,22 +1,12 @@
-import { alumnoModel } from "../models/alumno.model.js";
+import { AlumnoModel } from "../models/alumno.model.js";
 
 export const createAlumno = async (req, res) => {
-  const { nombre, edad, contacto,   } = req.body;
-
   try {
-    const newRole = await alumnoModel.create({
-      nombre,
-      edad,
-      contacto,
-    });
-
-    res.status(201).json({
-      ok: true,
-      msg: "alumno creado correctamente",
-      data: newRole,
-    });
+    const newAlumno = new AlumnoModel(req.body);
+    await newAlumno.save();
+    res.status(201).json(newAlumno);
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.status(500).json({
       ok: false,
       msg: "Error interno del servidor",
@@ -24,16 +14,12 @@ export const createAlumno = async (req, res) => {
   }
 };
 
-export const getAllAlumno = async (req, res) => {
+export const getAlumnos = async (req, res) => {
   try {
-    const roles = await alumnoModel.find();
-
-    res.status(200).json({
-      ok: true,
-      data: roles,
-    });
+    const alumnos = await AlumnoModel.find().populate("carnet");
+    res.status(200).json(alumnos);
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.status(500).json({
       ok: false,
       msg: "Error interno del servidor",
@@ -41,15 +27,69 @@ export const getAllAlumno = async (req, res) => {
   }
 };
 
-// export const getUserById = async (req, res) => {
-//   const { id } = req.params;
+export const getAlumnoById = async (req, res) => {
+  try {
+    const alumno = await AlumnoModel.findById(req.params.id);
+    return res.status(200).json(alumno);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      ok: false,
+      msg: "Error interno del servidor",
+    });
+  }
+};
+
+export const updateAlumno = async (req, res) => {
+  try {
+    const updateAlumno = await AlumnoModel.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+    return res.status(200).json(updateAlumno);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      ok: false,
+      msg: "Error interno del servidor",
+    });
+  }
+};
+
+export const deleteAlumno = async (req, res) => {
+  try {
+    const deleteAlumno = await AlumnoModel.findByIdAndelete(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+    return res.status(200).json({ msg: "alumnado eliminado" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      ok: false,
+      msg: "Error interno del servidor",
+    });
+  }
+};
+
+// import { alumnoModel } from "../models/alumno.model.js";
+
+// export const createAlumno = async (req, res) => {
+//   const { nombre, edad, contacto,   } = req.body;
 
 //   try {
-//     const user = await UserModel.findById(id);
+//     const newRole = await alumnoModel.create({
+//       nombre,
+//       edad,
+//       contacto,
+//     });
 
-//     res.status(200).json({
+//     res.status(201).json({
 //       ok: true,
-//       data: user,
+//       msg: "alumno creado correctamente",
+//       data: newRole,
 //     });
 //   } catch (error) {
 //     console.log(error);
@@ -60,25 +100,13 @@ export const getAllAlumno = async (req, res) => {
 //   }
 // };
 
-// export const updateUser = async (req, res) => {
-//   const { id } = req.params;
-//   const { username } = req.body;
-
+// export const getAllAlumno = async (req, res) => {
 //   try {
-//     // const user = await UserModel.findById(id);
-
-//     // const updatedUser2 = await UserModel.updateOne({ _id: id }, { username });
-
-//     const updatedUser = await UserModel.findByIdAndUpdate(
-//       id,
-//       { username },
-//       { new: true }
-//     );
+//     const roles = await alumnoModel.find();
 
 //     res.status(200).json({
 //       ok: true,
-//       msg: "Usuario actualizado correctamente",
-//       data: updatedUser,
+//       data: roles,
 //     });
 //   } catch (error) {
 //     console.log(error);
@@ -89,26 +117,74 @@ export const getAllAlumno = async (req, res) => {
 //   }
 // };
 
-// export const deleteUser = async (req, res) => {
-//   const { id } = req.params;
+// // export const getUserById = async (req, res) => {
+// //   const { id } = req.params;
 
-//   try {
-//     // const user = await UserModel.findById(id);
+// //   try {
+// //     const user = await UserModel.findById(id);
 
-//     // const deletedUser2 = await UserModel.deleteOne({ _id: id });
+// //     res.status(200).json({
+// //       ok: true,
+// //       data: user,
+// //     });
+// //   } catch (error) {
+// //     console.log(error);
+// //     return res.status(500).json({
+// //       ok: false,
+// //       msg: "Error interno del servidor",
+// //     });
+// //   }
+// // };
 
-//     const deletedUser = await UserModel.findByIdAndDelete(id);
+// // export const updateUser = async (req, res) => {
+// //   const { id } = req.params;
+// //   const { username } = req.body;
 
-//     res.status(200).json({
-//       ok: true,
-//       msg: "Usuario eliminado correctamente",
-//       data: deletedUser,
-//     });
-//   } catch (error) {
-//     console.log(error);
-//     return res.status(500).json({
-//       ok: false,
-//       msg: "Error interno del servidor",
-//     });
-//   }
-// };
+// //   try {
+// //     // const user = await UserModel.findById(id);
+
+// //     // const updatedUser2 = await UserModel.updateOne({ _id: id }, { username });
+
+// //     const updatedUser = await UserModel.findByIdAndUpdate(
+// //       id,
+// //       { username },
+// //       { new: true }
+// //     );
+
+// //     res.status(200).json({
+// //       ok: true,
+// //       msg: "Usuario actualizado correctamente",
+// //       data: updatedUser,
+// //     });
+// //   } catch (error) {
+// //     console.log(error);
+// //     return res.status(500).json({
+// //       ok: false,
+// //       msg: "Error interno del servidor",
+// //     });
+// //   }
+// // };
+
+// // export const deleteUser = async (req, res) => {
+// //   const { id } = req.params;
+
+// //   try {
+// //     // const user = await UserModel.findById(id);
+
+// //     // const deletedUser2 = await UserModel.deleteOne({ _id: id });
+
+// //     const deletedUser = await UserModel.findByIdAndDelete(id);
+
+// //     res.status(200).json({
+// //       ok: true,
+// //       msg: "Usuario eliminado correctamente",
+// //       data: deletedUser,
+// //     });
+// //   } catch (error) {
+// //     console.log(error);
+// //     return res.status(500).json({
+// //       ok: false,
+// //       msg: "Error interno del servidor",
+// //     });
+// //   }
+// // };
