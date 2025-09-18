@@ -16,7 +16,7 @@ export const createAlumno = async (req, res) => {
 
 export const getAlumnos = async (req, res) => {
   try {
-    const alumnos = await AlumnoModel.find().populate("carnet");
+    const alumnos = await AlumnoModel.find({ activo: true }).populate("carnet");
     res.status(200).json(alumnos);
   } catch (error) {
     console.error(error);
@@ -56,15 +56,21 @@ export const updateAlumno = async (req, res) => {
     });
   }
 };
-
 export const deleteAlumno = async (req, res) => {
   try {
-    const deleteAlumno = await AlumnoModel.findByIdAndelete(
+    const deleteAlumno = await AlumnoModel.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      { activo: false },
       { new: true }
     );
-    return res.status(200).json({ msg: "alumnado eliminado" });
+
+    if (!deleteAlumno) {
+      return res.status(404).json({ msg: "Alumno no encontrado" });
+    }
+
+    return res
+      .status(200)
+      .json({ msg: "Alumno eliminado lógicamente", alumno: deleteAlumno });
   } catch (error) {
     console.error(error);
     return res.status(500).json({

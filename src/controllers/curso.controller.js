@@ -1,66 +1,77 @@
 import { cursoModel } from "../models/curso.model.js";
 
-export const agregarCurso = async (req, res) => {
-  const { idAlumno } = req.params;
-  const { nombre } = req.body;
-
+export const createCurso = async (req, res) => {
   try {
-    // 1. Buscar alumno
-    const alumno = await alumnoModel.findById(idAlumno);
-    if (!alumno) {
-      return res.status(404).json({ message: "Alumno no encontrado" });
-    }
-
-    // 2. Crear curso y asociar al alumno
-    const nuevoCurso = new cursoModel({
-      nombre,
-      alumnos: [idAlumno]
-    });
-    await nuevoCurso.save();
-
-    // 3. Asociar curso al alumno
-    alumno.cursos.push(nuevoCurso._id);
-    await alumno.save();
-
-    // 4. Retornar alumno con curso (populate correcto)
-    const alumnoConCurso = await alumnoModel
-      .findById(idAlumno)
-      .populate("cursos");
-
-    res.status(201).json(alumnoConCurso);
-
+    const newCurso = new cursoModel(req.body);
+    await newCurso.save();
+    res.status(201).json(newCurso);
   } catch (error) {
-    console.log(error); // 🔹 Muy importante para depurar
-    res.status(500).json({ message: "Error al agregar curso", error });
+    console.error(error);
+    return res.status(500).json({
+      ok: false,
+      msg: "Error interno del servidor",
+    });
   }
 };
 
-
-
 export const getCursos = async (req, res) => {
-    try {
-        const cursos = await cursoModel.find();
-        return res.status(200).json(cursos);
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({ message: "Error interno del servidor" });
-    }
-}
+  try {
+    const cursos = await cursoModel
+      .find()
+      .populate("alumnos")
+      .populate("profesor"); // si lo definiste en el schema
+    res.status(200).json(cursos);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      ok: false,
+      msg: "Error interno del servidor",
+    });
+  }
+};
 
-// export const getCursosById = async (req, res) => {
-//     try {
-        
-//     } catch (error) {
-//         console.error(error);
-//         return res.status(500).json({ message: "Error interno del servidor" });
-//     }
-// }
+export const getCursoById = async (req, res) => {
+  try {
+    const curso = await cursoModel
+      .findById(req.params.id)
+      .populate("alumnos")
+      .populate("profesor");
+    return res.status(200).json(curso);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      ok: false,
+      msg: "Error interno del servidor",
+    });
+  }
+};
 
-// export const getCursos = async (req, res) => {
-//     try {
-        
-//     } catch (error) {
-//         console.error(error);
-//         return res.status(500).json({ message: "Error interno del servidor" });
-//     }
-// }
+export const updateCurso = async (req, res) => {
+  try {
+    const updateCurso = await cursoModel.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+    return res.status(200).json(updateCurso);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      ok: false,
+      msg: "Error interno del servidor",
+    });
+  }
+};
+
+export const deleteCurso = async (req, res) => {
+  try {
+    const deleteCurso = await cursoModel.findByIdAndDelete(req.params.id);
+    return res.status(200).json({ msg: "curso eliminado" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      ok: false,
+      msg: "Error interno del servidor",
+    });
+  }
+};

@@ -29,6 +29,10 @@ const alumnoSchema = new Schema(
         required: false,
       },
     ],
+    activo: {
+      type: Boolean,
+      default: true,
+    },
   },
   {
     versionKey: false,
