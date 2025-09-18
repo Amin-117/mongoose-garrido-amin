@@ -19,16 +19,16 @@ const alumnoSchema = new Schema(
     carnet: {
       type: Types.ObjectId,
       ref: "Carnet",
-      require: false,
+      required: false,
       unique: true,
     },
-    // cursos: [
-    //   {
-    //     type: Types.ObjectId,
-    //     ref: "Curso",
-    //     require: false,
-    //   },
-    // ],
+    cursos: [
+      {
+        type: Types.ObjectId,
+        ref: "Curso",
+        required: false,
+      },
+    ],
   },
   {
     versionKey: false,
