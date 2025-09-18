@@ -7,10 +7,24 @@ const cursoSchema = new Schema({
     required: true,
     unique: true,
   },
-  alumnos: {
-    type: [Types.ObjectId],
-    ref: "Alumno",
-  },
+  alumnos: [
+    {
+      type: Types.ObjectId,
+      ref: "Alumno",
+    },
+  ],
+  profesores: [
+    {
+      type: Types.ObjectId,
+      ref: "Profesor",
+    },
+  ],
+});
+
+cursoSchema.virtual("alumnosInscritos", {
+  ref: "Alumno",
+  localField: "_id",
+  foreignField: "cursos",
 });
 
 export const cursoModel = model("Curso", cursoSchema);
