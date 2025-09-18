@@ -14,6 +14,35 @@ export const createProfesor = async (req, res) => {
   }
 };
 
+export const addCursoToProfesor = async (req, res) => {
+  const { idProfesor } = req.params;
+  const { cursoId } = req.body;
+  try {
+    if (!cursoId) {
+      return res.status(400).json({ msg: "Debes enviar el id del curso" });
+    }
+
+    const profesorActualizado = await profesorModel
+      .findByIdAndUpdate(
+        idProfesor,
+        { $addToSet: { cursos: cursoId } },
+        { new: true }
+      )
+      .populate("cursos");
+
+    if (!profesorActualizado) {
+      return res.status(404).json({ msg: "Profesor no encontrado" });
+    }
+
+    return res.status(200).json(profesorActualizado);
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ msg: "Error al agregar el curso al profesor" });
+  }
+};
+
 export const getProfesores = async (req, res) => {
   try {
     const profesores = await profesorModel.find().populate("cursos");

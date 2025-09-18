@@ -1,16 +1,26 @@
 import { carnetModel } from "../models/carnet.model.js";
+import { AlumnoModel } from "../models/alumno.model.js";
 
 export const createCarnet = async (req, res) => {
   try {
-    const newCarnet = new carnetModel(req.body);
+    const { carrera, alumnoId } = req.body;
+
+    const newCarnet = new carnetModel({
+      carrera,
+      alumno: alumnoId,
+    });
     await newCarnet.save();
-    res.status(201).json(newCarnet);
+
+    await AlumnoModel.findByIdAndUpdate(
+      alumnoId,
+      { carnet: newCarnet._id },
+      { new: true }
+    );
+
+    return res.status(201).json(newCarnet);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({
-      ok: false,
-      msg: "Error interno del servidor",
-    });
+    return res.status(500).json({ msg: "Error al crear el carnet" });
   }
 };
 

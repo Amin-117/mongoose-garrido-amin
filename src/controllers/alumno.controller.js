@@ -1,4 +1,5 @@
 import { AlumnoModel } from "../models/alumno.model.js";
+import { carnetModel } from "../models/carnet.model.js";
 
 export const createAlumno = async (req, res) => {
   try {
@@ -56,6 +57,7 @@ export const updateAlumno = async (req, res) => {
     });
   }
 };
+
 export const deleteAlumno = async (req, res) => {
   try {
     const deleteAlumno = await AlumnoModel.findByIdAndUpdate(
@@ -67,6 +69,8 @@ export const deleteAlumno = async (req, res) => {
     if (!deleteAlumno) {
       return res.status(404).json({ msg: "Alumno no encontrado" });
     }
+
+    await carnetModel.findOneAndDelete({ alumno: alumno._id });
 
     return res
       .status(200)
